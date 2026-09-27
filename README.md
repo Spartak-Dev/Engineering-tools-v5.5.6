@@ -38,5 +38,5 @@
 
 ---
 
-### 🔗 Спробувати онлайн / ПерДемо / Онлайн-версія:Онлайн-версія: Посилання на GitHub**Репозиторій: https://github.com/Spartak-Dev/Engineering-tools-v5.5.6
+### 🔗 Спробувати онлайн / ПерДемо / Онлайн-версія:Онлайн-версія: Посилання на GitHub Репозиторій: https://github.com/Spartak-Dev/Engineering-tools-v5.5.6
 ### Спробувати сам калькулятор: https://spartak-dev.github.io/Engineering-tools-v5.5.6/
