@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Engineering Tools 5.5.6 - Universal Arsenal</title>
+   <link rel="stylesheet" href="calc 5.5.6.css">
+</head>
+<body>
+   <script src="data_base.js" type="text/javascript" charset="utf-8"></script>
+   <script src="formula.js" type="text/javascript" charset="utf-8"></script>
+   <script src="ui_js 5.5.6.js" type="text/javascript" charset="utf-8"></script>
+<div class="container">
+    <h2>Engineering Tools v5.5.6</h2>
+    
+    <button onclick="openCalcPowerbankForm()">1. Зарядка ПБ (Динаміка)</button>
+    <button onclick="openCalcLiIonForm()">2. Зарядка Li-ion акумуляторів</button>
+    <button class="new-tool" onclick="openCalcWorkTimeForm()">3. Час роботи (Pro Mode)</button>
+    <button class="audit-tool" onclick="openCalcLightTimeForm()">4. Скільки було світло?</button>
+    <button class="architect-tool" onclick="openCalcChargeStatsForm()">5. Аналіз: Скільки зарядок і % пб залишиться</button>
+    <button class="new-tool" onclick="openCalcFlashlightForm()">6. Робота ліхтарика</button>
+    <button class="new-tool" onclick="openSurvivalModeForm()">7. Режим виживання (Планування)</button>
+    <button class="audit-tool" onclick="openAuditPowerbankForm()">8. Аудит ПБ (Перевірка реальної якості)</button>
+    <button onclick="openCalcHomeBackupForm()">9. Home Backup (Квартира/ДБЖ)</button>
+    <button onclick="openCalcRechargeForm()">10. Регенерація (Зарядка великих АКБ/Станцій)</button>
+    <button class="new-tool" onclick="openSolarCalculator()">11. ☀️ Сонячні панелі (Solar Hybrid)</button>
+        
+    <div style="margin: 20px 0;">
+        <button class="converter-btn" onclick="toggleConverter()">🔄 Відкрити Конвертер Величин</button>
+        
+        <div id="converter" class="converter-content">
+            <h4 style="color: #4CAF50; margin-bottom: 15px;">⚡ Швидкий перерахунок:</h4>
+            
+            <div class="form-group">
+                <label>📊 Що потрібно розрахувати?</label>
+                <select id="conv_main_type" onchange="toggleConverterType()">
+                    <option value="">-- Оберіть тип --</option>
+                    <option value="physical">Фізичні величини (P, I, U, тощо)</option>
+                    <option value="prefix">Префікси (мілі, кіло, тощо)</option>
+                </select>
+            </div>
+            
+            <div id="physical_section" style="display: none;">
+                <div class="form-group">
+                    <label>🔬 Яку саме величину?</label>
+                    <select id="physical_quantity" onchange="showPhysicalFormulas()">
+                        <option value="">-- Оберіть величину --</option>
+                        <option value="P">P (Потужність, W)</option>
+                        <option value="I">I (Сила струму, A)</option>
+                        <option value="U">U (Напруга, V)</option>
+                        <option value="R">R (Опір, Ω)</option>
+                        <option value="A">A (Робота/Енергія, J)</option>
+                        <option value="t">t (Час, s)</option>
+                        <option value="mAh">mAh (Міліампер-години)</option>
+                        <option value="Ah">Ah (Ампер-години)</option>
+                        <option value="Wh">Wh (Ват-години)</option>
+                    </select>
+                </div>
+                
+                <div id="formulas_container" style="display: none; background: #1a1a1d; padding: 12px; border-radius: 8px; margin: 10px 0; border: 1px solid #4CAF50;">
+                    <label style="color: #4CAF50; font-weight: bold;">📐 Доступні формули:</label>
+                    <div id="formulas_list" style="color: #ccc; font-size: 13px; margin-top: 5px;"></div>
+                </div>
+                
+                <div id="physical_inputs" style="display: none; margin-top: 15px;"></div>
+                
+                <button class="btn-form btn-primary" onclick="calculatePhysical()" style="width: 100%; margin-top: 15px;">🧮 Розрахувати</button>
+                <div id="physical_result" class="result-area" style="display: none; margin-top: 15px;"></div>
+            </div>
+            
+            <div id="prefix_section" style="display: none;">
+                <div class="form-group">
+                    <label>🔢 Введіть значення:</label>
+                    <input type="number" id="prefix_value" placeholder="Наприклад: 1000" style="width: 100%;">
+                </div>
+                
+                <div class="form-group">
+                    <label>📏 Напрямок конвертації:</label>
+                    <select id="prefix_direction" style="width: 100%;">
+                        <option value="milli_to_base">З мілі- у базову (напр. 1000 mA → 1 A)</option>
+                        <option value="base_to_milli">З базової у мілі- (напр. 1 A → 1000 mA)</option>
+                        <option value="kilo_to_base">З кіло- у базову (напр. 1 kW → 1000 W)</option>
+                        <option value="base_to_kilo">З базової у кіло- (напр. 1000 W → 1 kW)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>📐 Одиниця виміру:</label>
+                    <select id="prefix_unit" style="width: 100%;">
+                        <option value="A">A (Ампер)</option>
+                        <option value="V">V (Вольт)</option>
+                        <option value="W">W (Ват)</option>
+                        <option value="Ω">Ω (Ом)</option>
+                        <option value="J">J (Джоуль)</option>
+                        <option value="s">s (Секунда)</option>
+                        <option value="h">h (Година)</option>
+                        <option value="g">g (Грам)</option>
+                        <option value="m">m (Метр)</option>
+                    </select>
+                </div>
+                
+                <button class="btn-form btn-primary" onclick="calculatePrefix()" style="width: 100%; margin-top: 15px;">🔄 Конвертувати</button>
+                <div id="prefix_result" class="result-area" style="display: none; margin-top: 15px;"></div>
+            </div>
+            
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #444;">
+                <p style="color: #888; font-size: 12px; margin-bottom: 10px;">⚡ Швидкі конвертери:</p>
+                
+                <p style="font-size: 13px;">mAh ➡️ Ah:<br>
+                <input type="number" id="conv_mah" placeholder="Введіть mAh" oninput="convertMah()" style="width: 80%;"> 
+                = <b><span id="res_ah" style="color: #4CAF50;">0</span> Ah</b></p>
+
+                <p style="font-size: 13px;">Ah + V ➡️ Wh:<br>
+                <input type="number" id="conv_ah" placeholder="Ah" style="width: 30%;"> × 
+                <input type="number" id="conv_v" placeholder="V" value="3.7" style="width: 30%;"> 
+                <button onclick="convertWh()" style="padding: 5px 10px;">=</button> 
+                <b><span id="res_wh" style="color: #4CAF50;">0</span> Wh</b></p>
+
+                <p style="font-size: 13px;">A + V ➡️ W:<br>
+                <input type="number" id="conv_amp" placeholder="А" style="width: 30%;"> × 
+                <input type="number" id="conv_volt" placeholder="V" style="width: 30%;"> 
+                <button onclick="convertW()" style="padding: 5px 10px;">=</button> 
+                <b><span id="res_w" style="color: #4CAF50;">0</span> W</b></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="statusArea"></div>
+    <div id="saveArea" style="display:none;">
+        <button class="save-btn" onclick="downloadReport()">💾 ЗАВАНТАЖИТИ ЗВІТ (.txt)</button>
+    </div>
+
+    <div class="arsenal-section">
+        <h4>📦 МІЙ АРСЕНАЛ</h4>
+        <div id="deviceList" class="device-list">Арсенал порожній</div>
+        <button class="add-device-btn" onclick="openAddDeviceForm()">+ Додати новий пристрій</button>
+    </div>
+    <div class="footer">Математична модель Архітектора v5.5.6</div>
+</div>
+
+<!-- Модальні форми (повні) -->
+
+<!-- 1. Форма для кнопки 1 -->
+<div id="calcPowerbankModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('calcPowerbankModal')">&times;</span>
+        <h3>1. Зарядка ПБ (Динаміка)</h3>
+        <div id="arsenal_single_1" class="arsenal-selector-container"></div>
+        <div class="form-group">
+            <label>Що ви знаєте про ємність ПБ?</label>
+            <select id="pb_know_capacity" onchange="togglePbCapacityFields()">
+                <option value="mah">Знаю mAh</option>
+                <option value="wh">Знаю Wh</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label id="pb_mah_label">Ємність ПБ (mAh):</label>
+            <input type="number" id="pb_mah" placeholder="Наприклад: 10000">
+        </div>
+        <div class="form-group">
+            <label>Потужність зарядки (W):</label>
+            <input type="number" id="pb_watts" placeholder="Наприклад: 18">
+        </div>
+        <div class="form-group">
+            <label>Поточний % заряду:</label>
+            <input type="number" id="pb_percent" placeholder="Наприклад: 20">
+        </div>
+        <div class="form-actions">
+            <button class="btn-form btn-secondary" onclick="closeModal('calcPowerbankModal')">Скасувати</button>
+            <button class="btn-form btn-primary" onclick="calcPowerbank()">Розрахувати</button>
+        </div>
+        <div id="calcPowerbankResult" class="result-area" style="display: none;"></div>
+    </div>
+</div>
+
+<!-- 2. Форма для кнопки 2 -->
+<div id="calcLiIonModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('calcLiIonModal')">&times;</span>
+        <h3>2. Зарядка Li-ion акумуляторів</h3>
+        <div class="form-group">
+            <label>Що ви знаєте про ємність?</label>
+            <select id="liion_know_capacity" onchange="toggleLiIonCapacityFields()">
+                <option value="mah">Знаю mAh</option>
+                <option value="wh">Знаю Wh</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label id="liion_mah_label">Ємність акумулятора (mAh):</label>
+            <input type="number" id="liion_mah" placeholder="Наприклад: 2600">
+        </div>
+        <div class="form-group">
+            <label>Ви знаєте потужність зарядного пристрою (W)?</label>
+            <select id="know_power" onchange="togglePowerFields()">
+                <option value="yes">Так</option>
+                <option value="no">Ні, буду вводити вольти і ампери</option>
+            </select>
+        </div>
+        <div id="power_fields" style="display: block;">
+            <div class="form-group">
+                <label>Потужність (W):</label>
+                <input type="number" id="liion_watts" placeholder="Наприклад: 5">
+            </div>
+        </div>
+        <div id="voltage_fields" style="display: none;">
+            <div class="form-group">
+                <label>Напруга (V):</label>
+                <input type="number" id="liion_volts" placeholder="Наприклад: 5">
+            </div>
+            <div class="form-group">
+                <label>Струм (A):</label>
+                <input type="number" id="liion_amps" placeholder="Наприклад: 1">
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn-form btn-secondary" onclick="closeModal('calcLiIonModal')">Скасувати</button>
+            <button class="btn-form btn-primary" onclick="calcLiIon()">Розрахувати</button>
+        </div>
+        <div id="calcLiIonResult" class="result-area" style="display: none;"></div>
+    </div>
+</div>
+
+<!-- 3. Форма для кнопки 3 (з арсеналом) -->
+<div id="calcWorkTimeModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('calcWorkTimeModal')">&times;</span>
+        <h3>3. Час роботи (Pro Mode)</h3>
+        <div id="arsenal_single_3" class="arsenal-selector-container" style="margin-bottom:15px;"></div>
+        <div class="form-group">
+            <label>Ємність павербанку у Wh?</label>
+            <select id="know_wh" onchange="toggleWhFields()">
+                <option value="yes">Так</option>
+                <option value="no">Ні, буду вводити mAh і V</option>
+            </select>
+        </div>
+        <div id="wh_field" style="display: block;">
+            <div class="form-group">
+                <label>Wh вашого пб:</label>
+                <input type="number" id="worktime_wh" placeholder="Наприклад: 37">
+            </div>
+        </div>
+        <div id="mah_v_fields" style="display: none;">
+            <div class="form-group">
+                <label>Ємність у mAh:</label>
+                <input type="number" id="worktime_mah" placeholder="Наприклад: 10000">
+            </div>
+            <div class="form-group">
+                <label>Напруга акумулятора (зазвичай 3.7):</label>
+                <input type="number" id="worktime_v" placeholder="3.7" value="3.7">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Максимальна вихідна потужність вашого пб (W):</label>
+            <input type="number" id="worktime_maxw" placeholder="Наприклад: 18">
+        </div>
+        <div id="arsenal_multi_3" class="arsenal-selector-container" style="margin-bottom:15px;"></div>
+        <div class="form-group">
+            <label>Скільки споживачів ви хочете підключити?</label>
+            <input type="number" id="worktime_count" placeholder="Наприклад: 2">
+        </div>
+        <div id="consumers_container"></div>
+        <div class="form-actions">
+            <button class="btn-form btn-secondary" onclick="closeModal('calcWorkTimeModal')">Скасувати</button>
+            <button class="btn-form btn-primary" onclick="calcWorkTime()">Розрахувати</button>
+        </div>
+        <div id="calcWorkTimeResult" class="result-area" style="display: none;"></div>
+    </div>
+</div>
+<!-- 4. Форма для кнопки 4 -->
+<div id="calcLightTimeModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('calcLightTimeModal')">&times;</span>
+        <h3>4. Скільки було світло?</h3>
+        <div class="form-group">
+            <label>Тип акумулятора:</label>
+            <select id="light_type" onchange="toggleLightCapacityFields()">
+                <option value="lithium">Li-ion</option>
+                <option value="lifepo4">LiFePO4</option>
+                <option value="lead_acid">Свинцевий</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label id="light_capacity_label">Ємність ПБ (mAh):</label>
+            <input type="number" id="light_capacity_value" placeholder="Наприклад: 10000">
+            
+            <select id="lead_unit_select" style="display: none; margin-top: 8px;" onchange="toggleLeadVoltageField()">
+                <option value="wh">Wh</option>
+                <option value="ah">Ah</option>
+            </select>
+            
+            <div id="lead_voltage_field" style="display: none; margin-top: 10px;">
+                <label style="margin-top: 8px; display: block;">Скільки V:</label>
+                <input type="number" id="lead_voltage" placeholder="Наприклад: 12" style="margin-top: 5px;">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>% спочатку:</label>
+            <input type="number" id="light_p1" placeholder="Наприклад: 80">
+        </div>
+        <div class="form-group">
+            <label>% в кінці:</label>
+            <input type="number" id="light_p2" placeholder="Наприклад: 60">
+        </div>
+        <div class="form-group">
+            <label>Потужність споживача (W):</label>
+            <input type="number" id="light_w" placeholder="Наприклад: 5">
+        </div>
+        <div class="form-actions">
+            <button class="btn-form btn-secondary" onclick="closeModal('calcLightTimeModal')">Скасувати</button>
+            <button class="btn-form btn-primary" onclick="calcLightTime()">Розрахувати</button>
+        </div>
+        <div id="calcLightTimeResult" class="result-area" style="display: none;"></div>
+    </div>
+</div>
+
+<!-- 5. Форма для кнопки 5 (з арсеналом) -->
+<div id="calcChargeStatsModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('calcChargeStatsModal')">&times;</span>
+        <h3>5. Аналіз: Скільки зарядок і % пб залишиться</h3>
+        <div id="arsenal_single_5_pb" class="arsenal-selector-container" style="margin-bottom:15px;"></div>
+        <div class="form-group">
+            <label>Знаєте Wh павербанка?</label>
+            <select id="know_pb_wh" onchange="togglePbWhFields()">
+                <option value="yes">Так</option>
+                <option value="no">Ні, буду вводити mAh</option>
+            </select>
+        </div>
+        <div id="pb_wh_field" style="display: block;">
+            <div class="form-group">
+                <label>Wh павербанка:</label>
+                <input type="number" id="charge_stats_wh" placeholder="Наприклад: 37">
+            </div>
+        </div>
+        <div id="pb_mah_field" style="display: none;">
+            <div class="form-group">
+                <label>mAh павербанка:</label>
+                <input type="number" id="charge_stats_mah" placeholder="Наприклад: 10000">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Який зараз % заряду ПБ?</label>
+            <input type="number" id="charge_stats_p2" placeholder="Наприклад: 80">
+        </div>
+        <div class="form-group">
+            <label>Скільки споживачів плануєте зарядити?</label>
+            <input type="number" id="charge_stats_p4" placeholder="Наприклад: 2" oninput="updateChargeDeviceFields()">
+        </div>
+        <div id="arsenal_multi_5" class="arsenal-selector-container" style="margin-bottom:15px;"></div>
+        <div class="form-group">
+            <label>Потужність зарядки (W):</label>
+            <input type="number" id="charge_stats_charge_power" placeholder="Наприклад: 10">
+        </div>
+        <div id="charge_devices_container"></div>
+        <div class="form-actions">
+            <button class="btn-form btn-secondary" onclick="closeModal('calcChargeStatsModal')">Скасувати</button>
+            <button class="btn-form btn-primary" onclick="calcChargeStats()">Розрахувати</button>
+        </div>
+        <div id="calcChargeStatsResult" class="result-area" style="display: none;"></div>
+    </div>
+</div>
+
+<!-- 6. Форма для кнопки 6 (з базою чіпів) -->
+<div id="calcFlashlightModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('calcFlashlightModal')">&times;</span>
+        <h3>6. Робота ліхтарика</h3>
+        <div class="form-group">
+            <label>Що ви знаєте про ємність?</label>
+            <select id="flashlight_know_capacity" onchange="toggleFlashlightCapacityFields()">
+                <option value="mah">Знаю mAh</option>
+                <option value="wh">Знаю Wh</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label id="flashlight_mah_label">Ємність акумулятора (mAh):</label>
+            <input type="number" id="flashlight_mah" placeholder="Наприклад: 5000">
+        </div>
+        <div class="form-group">
+            <label>Поточний % заряду (0-100):</label>
+            <input type="number" id="flashlight_percentage" placeholder="Наприклад: 75">
+        </div>
+        <div class="form-group">
+            <label>Бажана яскравість (lm):</label>
+            <input type="number" id="flashlight_lm" placeholder="Наприклад: 100">
+        </div>
+
+        <div class="form-group" style="border-top: 1px solid #444; padding-top: 12px; margin-top: 15px;">
+            <label>⚙️ Точність розрахунку:</label>
+            <select id="flashlight_mode" onchange="toggleFlashlightMode()">
+                <option value="standard">Стандартний (100 лм/Вт)</option>
+                <option value="chip">За характеристиками чіпа</option>
+                <option value="manual">Ввести потужність вручну</option>
+            </select>
+        </div>
+
+        <!-- Секція: Вибір чіпа -->
+        <div id="flashlight_chip_section" class="flashlight-accent-box" style="display: none;">
+            <div class="form-group">
+                <label>Тип чіпа:</label>
+                <select id="flashlight_chip_category" onchange="updateFlashlightChipList()">
+                    <option value="">-- Оберіть тип --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Модель чіпа:</label>
+                <select id="flashlight_chip_model" onchange="updateFlashlightChipInfo()">
+                    <option value="">-- Спочатку оберіть тип --</option>
+                </select>
+            </div>
+            <div id="flashlight_chip_info" style="display: none;"></div>
+        </div>
+
+        <!-- Секція: Ручний режим -->
+        <div id="flashlight_manual_section" class="flashlight-accent-box" style="display: none;">
+            <div class="form-group">
+                <label>Реальне споживання ліхтарика (W):</label>
+                <input type="number" id="flashlight_manual_watts" placeholder="Наприклад: 5">
+            </div>
+        </div>
+
+        <!-- ККД драйвера (спільний для chip і manual) -->
+        <div id="flashlight_driver_section" style="display: none; margin-top: 10px;">
+            <div class="form-group">
+                <label>ККД драйвера (%):</label>
+                <input type="number" id="flashlight_driver_eff" value="85" min="50" max="100">
+                <small style="color: #888;">Типово 85%. Buck — 90%+, Linear — 70-80%</small>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn-form btn-secondary" onclick="closeModal('calcFlashlightModal')">Скасувати</button>
+            <button class="btn-form btn-primary" onclick="calcFlashlight()">Розрахувати</button>
+        </div>
+        <div id="calcFlashlightResult" class="result-area" style="display: none;"></div>
+    </div>
+</div>
+
+<!-- 7. Форма для кнопки 7 (з арсеналом) -->
+<div id="survivalModeModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('survivalModeModal')">&times;</span>
+        <h3>7. Режим виживання (Планування)</h3>
+        <div id="arsenal_single_7" class="arsenal-selector-container" style="margin-bottom:15px;"></div>
+        <div class="form-group">
+            <label>Тип акумулятора:</label>
+            <select id="survival_type" onchange="toggleSurvivalCapacityFields()">
+                <option value="lithium">Li-ion</option>
+                <option value="lifepo4">LiFePO4</option>
+                <option value="lead_acid">Свинцевий</option>
+            </select>
+        </div>
+        <div class="form-group" id="survival_know_capacity_group" style="display: none;">
+            <label>Що ви знаєте про ємність?</label>
+            <select id="survival_know_capacity" onchange="toggleSurvivalCapacityFields()">
+                <option value="mah">Знаю mAh</option>
+                <option value="wh">Знаю Wh</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label id="survival_capacity_label">Ємність ПБ (mAh):</label>
+            <input type="number" id="survival_capacity_value" placeholder="Наприклад: 10000">
+            
+            <select id="survival_lead_unit" style="display: none; margin-top: 8px;" onchange="toggleSurvivalVoltageField()">
+                <option value="wh">Wh</option>
+                <option value="ah">Ah</option>
+            </select>
+            
+            <div id="survival_voltage_field" style="display: none; margin-top: 10px;">
+                <label style="margin-top: 8px; display: block;">Скільки V:</label>
+                <input type="number" id="survival_voltage" placeholder="Наприклад: 12" style="margin-top: 5px;">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Який зараз % заряду?</label>
+            <input type="number" id="survival_p" placeholder="Наприклад: 80">
+        </div>
+        <div class="form-group">
+            <label>Скільки годин ще НЕ БУДЕ світла? (год)</label>
+            <input type="number" id="survival_hours_needed" placeholder="Наприклад: 10">
+        </div>
+        <div class="form-actions">
+            <button class="btn-form btn-secondary" onclick="closeModal('survivalModeModal')">Скасувати</button>
+            <button class="btn-form btn-primary" onclick="survivalMode()">Розрахувати</button>
+        </div>
+        <div id="survivalModeResult" class="result-area" style="display: none;"></div>
+    </div>
+</div>
+
+<!-- 8. Форма для кнопки 8 -->
+<div id="auditPowerbankModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('auditPowerbankModal')">&times;</span>
+        <h3>8. Аудит ПБ (Перевірка реальної якості)</h3>
+        <div class="form-group">
+            <label>Тип акумулятора:</label>
+            <select id="audit_battery_type" onchange="toggleAuditCapacityFields()">
+                <option value="lithium">Li-ion</option>
+                <option value="lifepo4">LiFePO4</option>
+                <option value="lead_acid">Свинцевий</option>
+            </select>
+        </div>
+        <div class="form-group" id="audit_know_capacity_group" style="display: none;">
+            <label>Що ви знаєте про ємність?</label>
+            <select id="audit_know_capacity" onchange="toggleAuditCapacityFields()">
+                <option value="mah">Знаю mAh</option>
+                <option value="wh">Знаю Wh</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label id="audit_capacity_label">Ємність ПБ (mAh):</label>
+            <input type="number" id="audit_capacity_value" placeholder="Наприклад: 10000">
+            
+            <select id="audit_lead_unit" style="display: none; margin-top: 8px;" onchange="toggleAuditVoltageField()">
+                <option value="wh">Wh</option>
+                <option value="ah">Ah</option>
+            </select>
+            
+            <div id="audit_voltage_field" style="display: none; margin-top: 10px;">
+                <label style="margin-top: 8px; display: block;">Скільки V:</label>
+                <input type="number" id="audit_voltage" placeholder="Наприклад: 12" style="margin-top: 5px;">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Скільки годин працював споживач? (год)</label>
+            <input type="number" id="audit_hours" placeholder="Наприклад: 2">
+        </div>
+        <div class="form-group">
+            <label>Яка була потужність споживача (W)?</label>
+            <input type="number" id="audit_watts" placeholder="Наприклад: 5">
+        </div>
+        <div class="form-group">
+            <label>Скільки % заряду ПБ на це витратилося?</label>
+            <input type="number" id="audit_percent_used" placeholder="Наприклад: 20">
+        </div>
+        <div class="form-actions">
+            <button class="btn-form btn-secondary" onclick="closeModal('auditPowerbankModal')">Скасувати</button>
+            <button class="btn-form btn-primary" onclick="auditPowerbank()">Розрахувати</button>
+        </div>
+        <div id="auditPowerbankResult" class="result-area" style="display: none;"></div>
+    </div>
+</div>
+
+<!-- 9. Форма для кнопки 9 (з арсеналом) -->
+<div id="calcHomeBackupModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('calcHomeBackupModal')">&times;</span>
+        <h3>9. Home Backup (Квартира/ДБЖ)</h3>
+        <div id="arsenal_single_9_battery" class="arsenal-selector-container" style="margin-bottom:15px;"></div>
+        <div class="form-group">
+            <label>Оберіть тип системи:</label>
+            <select id="backup_type" onchange="toggleBackupWhFields()">
+                <option value="lifepo4">LiFePO4 (Станція/LFP)</option>
+                <option value="lead_acid">Свинцевий (Авто/Pb/AGM)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Ви знаєте ємність у Wh?</label>
+            <select id="backup_know_wh" onchange="toggleBackupWhFields()">
+                <option value="yes">Так</option>
+                <option value="no_ah">Ні, знаю в Ah</option>
+                <option value="no_mah">Ні, знаю в mAh (тільки для LiFePO4)</option>
+            </select>
+        </div>
+        <div id="backup_wh_field" style="display: block;">
+            <div class="form-group">
+                <label>Wh батареї:</label>
+                <input type="number" id="backup_wh" placeholder="Наприклад: 500">
+            </div>
+        </div>
+        <div id="backup_ah_field" style="display: none;">
+            <div class="form-group">
+                <label>Ah:</label>
+                <input type="number" id="backup_ah" placeholder="Наприклад: 156">
+            </div>
+        </div>
+        <div id="backup_mah_field" style="display: none;">
+            <div class="form-group">
+                <label>mAh:</label>
+                <input type="number" id="backup_mah" placeholder="Наприклад: 156000">
+            </div>
+        </div>
+        <div id="backup_voltage_field" style="display: none;">
+            <div class="form-group">
+                <label>Напруга V (6, 12 або 24):</label>
+                <input type="number" id="backup_voltage" placeholder="12">
+            </div>
+        </div>
+        <div id="arsenal_multi_9" class="arsenal-selector-container" style="margin-bottom:15px;"></div>
+        <div class="form-group">
+            <label>Скільки типів споживачів підключено?</label>
+            <input type="number" id="backup_count" placeholder="Наприклад: 2" oninput="updateBackupConsumerFields()">
+        </div>
+        <div id="backup_consumers_container"></div>
+        <div class="form-actions">
+            <button class="btn-form btn-secondary" onclick="closeModal('calcHomeBackupModal')">Скасувати</button>
+            <button class="btn-form btn-primary" onclick="calcHomeBackup()">Розрахувати</button>
+        </div>
+        <div id="calcHomeBackupResult" class="result-area" style="display: none;"></div>
+    </div>
+</div>
+<!-- 10. Форма для кнопки 10 (з арсеналом) -->
+<div id="calcRechargeModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('calcRechargeModal')">&times;</span>
+        <h3>10. Регенерація (Зарядка великих АКБ/Станцій)</h3>
+        <div id="arsenal_single_10" class="arsenal-selector-container" style="margin-bottom:15px;"></div>
+        <div class="form-group">
+            <label>Тип акумулятора для зарядки:</label>
+            <select id="recharge_type">
+                <option value="lifepo4">LiFePO4 (LFP)</option>
+                <option value="lead_acid">Свинцевий (Pb/AGM/GEL)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Ємність акумулятора:</label>
+            <select id="recharge_know_capacity" onchange="toggleRechargeCapacityFields()">
+                <option value="wh">Знаю Wh</option>
+                <option value="ah">Знаю Ah</option>
+                <option value="mah">Знаю mAh (тільки для LiFePO4)</option>
+            </select>
+        </div>
+        <div id="recharge_wh_field" style="display: block;">
+            <div class="form-group">
+                <label>Wh батареї:</label>
+                <input type="number" id="recharge_wh" placeholder="Наприклад: 500">
+            </div>
+        </div>
+        <div id="recharge_ah_field" style="display: none;">
+            <div class="form-group">
+                <label>Ah:</label>
+                <input type="number" id="recharge_ah" placeholder="Наприклад: 156">
+            </div>
+        </div>
+        <div id="recharge_mah_field" style="display: none;">
+            <div class="form-group">
+                <label>mAh:</label>
+                <input type="number" id="recharge_mah" placeholder="Наприклад: 156000">
+            </div>
+        </div>
+        <div id="recharge_voltage_field" style="display: none;">
+            <div class="form-group">
+                <label>Напруга V (зазвичай 12):</label>
+                <input type="number" id="recharge_voltage" placeholder="12">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>На скільки % ЗАРАЗ заряджений акумулятор?</label>
+            <input type="number" id="recharge_current_perc" placeholder="Наприклад: 30">
+        </div>
+        <div class="form-group">
+            <label>Потужність зарядного пристрою (W):</label>
+            <input type="number" id="recharge_power" placeholder="Наприклад: 100">
+        </div>
+        <div class="form-actions">
+            <button class="btn-form btn-secondary" onclick="closeModal('calcRechargeModal')">Скасувати</button>
+            <button class="btn-form btn-primary" onclick="calcRecharge()">Розрахувати</button>
+        </div>
+        <div id="calcRechargeResult" class="result-area" style="display: none;"></div>
+    </div>
+</div>
+
+<!-- Модальне вікно калькулятора сонячних панелей 11 -->
+<div id="solarModal" class="modal">
+    <div class="modal-content" style="width: 500px; max-height: 90vh; overflow-y: auto;">
+        <span class="close" onclick="closeModal('solarModal')">&times;</span>
+        <h3>☀️ Сонячні панелі (Hybrid)</h3>
+        
+        <div id="solar_status" class="result-area" style="margin-bottom: 15px; font-size: 12px; display: none;">
+            <span id="status_icon">🔵</span> <span id="status_text">Офлайн (Формули)</span>
+        </div>
+        
+        <div class="form-group">
+            <label>🔢 Кількість панелей:</label>
+            <input type="number" id="solar_panels_count" min="1" max="100" value="1">
+        </div>
+        <div class="form-group">
+            <label>⚡ Потужність 1 панелі (Wp):</label>
+            <input type="number" id="solar_panel_power" min="50" max="1000" value="400">
+        </div>
+        <div class="form-group">
+            <label>📍 Широта (Lat):</label>
+            <input type="number" id="solar_lat" step="0.01" min="-90" max="90" value="49.0">
+            <button type="button" onclick="detectLocation()" style="margin-top: 5px; font-size: 11px; padding: 5px 10px;">🎯 Визначити автоматично</button>
+        </div>
+        <div class="form-group">
+            <label>📍 Довгота (Lon):</label>
+            <input type="number" id="solar_lon" step="0.01" min="-180" max="180" value="31.0">
+        </div>
+        
+        <div style="display: flex; gap: 10px;">
+            <div class="form-group" style="flex: 1;">
+                <label>📅 Дата:</label>
+                <input type="date" id="solar_date">
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>🕐 Час:</label>
+                <input type="time" id="solar_time">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>📐 Кут нахилу (Tilt, °):</label>
+            <input type="number" id="solar_tilt" min="0" max="90" value="49" step="1">
+            <small style="color: #888;">Рекомендовано: = широті місцевості</small>
+        </div>
+        <div class="form-group">
+            <label>🧭 Азимут (°):</label>
+            <input type="text" 
+                   id="solar_azimuth" 
+                   value="0" 
+                   placeholder="0 = Південь, -90 = Схід"
+                   style="width: 100%; text-align: left; direction: ltr;"
+                   onkeydown="handleAzimuthKeydown(event, this)"
+                   oninput="validateAzimuth(this)"
+                   onblur="validateAzimuth(this)">
+            <small style="color: #888; display: block; margin-top: 5px;">
+                • 0° = Південь • -90° = Схід • +90° = Захід • ±180° = Північ
+            </small>
+        </div>
+        
+        <div class="form-group">
+            <label>📡 Режим отримання даних:</label>
+            <select id="solar_data_mode">
+                <option value="auto">🔄 Авто (API → Кеш → Формули)</option>
+                <option value="api">🌐 Тільки API (PVGIS)</option>
+                <option value="offline">💾 Тільки Offline (Формули)</option>
+            </select>
+        </div>
+        
+        <div class="form-actions">
+            <button class="btn-form btn-secondary" onclick="closeModal('solarModal')">Скасувати</button>
+            <button class="btn-form btn-primary" id="solar_calc_btn" onclick="calculateSolar()">🧮 Розрахувати</button>
+        </div>
+        
+        <div id="solar_results" style="display: none; margin-top: 20px;">
+            <div class="result-box">
+                <h4 style="color: #4CAF50; margin: 0 0 15px 0;">📊 Результати розрахунку</h4>
+                
+                <div class="result-row">
+                    <span>⚡ Миттєва потужність:</span>
+                    <b id="res_instant_power" style="color: #4CAF50;">0 W</b>
+                </div>
+                <div class="result-row">
+                    <span>📈 Прогноз на день:</span>
+                    <b id="res_daily_energy">0 Wh</b>
+                </div>
+                <div class="result-row">
+                    <span>🔋 Статус:</span>
+                    <b id="res_status_text">—</b>
+                </div>
+                <div class="result-row">
+                    <span>📡 Джерело даних:</span>
+                    <b id="res_data_source">—</b>
+                </div>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <label style="color: #ff9900; font-weight: bold;">📉 Графік виробітки (24 год):</label>
+                <canvas id="solar_chart" width="400" height="150" style="background: #1a1a1d; border-radius: 8px; margin-top: 10px;"></canvas>
+            </div>
+            
+            <div style="margin-top: 15px; padding: 10px; background: #2a2a2a; border-radius: 8px;">
+                <label style="color: #ff9900; font-weight: bold; display: block; margin-bottom: 10px;">🔗 Інтеграція:</label>
+                <button onclick="sendToSurvivalMode()" style="width: 100%; margin-bottom: 5px; font-size: 12px; padding: 8px;">
+                    📤 Передати в "Режим виживання" (Кнопка 7)
+                </button>
+                <button onclick="sendToRechargeMode()" style="width: 100%; font-size: 12px; padding: 8px;">
+                    📤 Передати в "Регенерація" (Кнопка 10)
+                </button>
+            </div>
+        </div>
+        
+        <div id="solar_loader" style="display: none; text-align: center; padding: 20px;">
+            <div style="display: inline-block; width: 30px; height: 30px; border: 3px solid #4CAF50; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <p style="margin-top: 10px; color: #888; font-size: 13px;">Отримання даних...</p>
+        </div>
+    </div>
+</div>
+
+<div id="addDeviceModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('addDeviceModal')">&times;</span>
+        <h3>+ Додати новий пристрій в Арсенал</h3>
+        
+        <div class="form-group">
+            <label>Тип пристрою:</label>
+            <select id="device_type">
+                <option value="phone">📱 Смартфон / Планшет</option>
+                <option value="laptop">💻 Ноутбук</option>
+                <option value="powerbank">🔋 Павербанк / Станція</option>
+                <option value="router">📡 Роутер / Термінал</option>
+                <option value="light">💡 Освітлення</option>
+                <option value="other">🔌 Інше</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Назва пристрою:</label>
+            <input type="text" id="device_name" placeholder="Наприклад: Ноутбук Asus">
+        </div>
+        
+        <div class="form-group">
+            <label>Ємність (mAh) [необов'язково]:</label>
+            <input type="number" id="device_mah" placeholder="Наприклад: 5000">
+        </div>
+        
+        <div class="form-group">
+            <label>Потужність (W)[необов'язково]:</label>
+            <input type="number" id="device_watts" placeholder="Наприклад: 65">
+        </div>
+        
+        <div class="form-group">
+            <label>Напруга (V) [за замовчуванням 5V]:</label>
+            <input type="number" id="device_voltage" placeholder="Наприклад: 19.5" value="5">
+        </div>
+        
+        <div class="form-actions">
+            <button class="btn-form btn-secondary" onclick="closeModal('addDeviceModal')">Скасувати</button>
+            <button class="btn-form btn-primary" onclick="addDeviceToStorageV2()">💾 Зберегти в Арсенал</button>
+        </div>
+    </div>
+</div>
+<p style="color: #666; font-size: 12px; margin-top: 20px; max-width: 400px; text-align: center; line-height: 1.4;">
+   Розроблено за логікою Архітектора (16 років).  Розрахунки враховують специфіку розряду Li-ion, LiFePO4 та Lead-Acid акумуляторів...
+Copyright © 2026 Tiberii de Spartak. Цей код є вільним для розповсюдження та має на меті допомогти будь-кому, хто потребує розрахунків, які пов'язані з електрикою під час blackout і не тільки. Використовується ліцензія MIT. Якщо у вас з'явилась ідея, як можна покращити цей проект, не соромтеся і пишіть!
+Author: Tiberii de Spartak (GitHub: @SpartakDev) Contact:
+G-mail: olejnykspartak@gmail.com
+Tg: t.me/Tiberii_de_Spartak
+Tt: tiktok.com/@spartak3377
+Reddit: https://www.reddit.com/u/Spartak3377/s/vNPsL5bGuv
+</p>
+</body>
+</html>
